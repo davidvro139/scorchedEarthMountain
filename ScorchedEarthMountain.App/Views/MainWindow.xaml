@@ -1,0 +1,274 @@
+<Window x:Class="ScorchedEarthMountain.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Scorched Earth Mountain Tools"
+        Width="1180"
+        Height="760"
+        MinWidth="980"
+        MinHeight="680"
+        Background="#FFF4EBDD">
+    <Window.Resources>
+        <DrawingBrush x:Key="CheckerboardBrush"
+                      TileMode="Tile"
+                      Viewport="0,0,16,16"
+                      ViewportUnits="Absolute">
+            <DrawingBrush.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="#FFD8D8D8"
+                                     Geometry="M 0,0 H 16 V 16 H 0 Z" />
+                    <GeometryDrawing Brush="#FFF2F2F2"
+                                     Geometry="M 0,0 H 8 V 8 H 0 Z" />
+                    <GeometryDrawing Brush="#FFF2F2F2"
+                                     Geometry="M 8,8 H 16 V 16 H 8 Z" />
+                </DrawingGroup>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,0,0,16" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0,6,0,0" />
+            <Setter Property="Padding" Value="8,6" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="0,8,8,0" />
+            <Setter Property="Padding" Value="14,8" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Padding="18"
+                Margin="0,0,0,16"
+                CornerRadius="12"
+                Background="#FF2C3E32">
+            <StackPanel>
+                <TextBlock FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="#FFF8F1E6"
+                           Text="Scorched Earth Mountain Converter" />
+                <TextBlock Margin="0,8,0,0"
+                           FontSize="14"
+                           Foreground="#FFD7D1C8"
+                           Text="Desktop tool for converting images to MTN files and MTN files to bitmaps." />
+                <TextBlock Margin="0,6,0,0"
+                           FontSize="12"
+                           Foreground="#FFBFB8AD"
+                           Text="Made by David Everton on March 24, 2026." />
+            </StackPanel>
+        </Border>
+
+        <TabControl Grid.Row="1"
+                    Background="#FFF9F4EC"
+                    BorderBrush="#FFD7C7AF">
+            <TabItem Header="Image to Mountain">
+                <Grid Margin="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="340" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <ScrollViewer Grid.Column="0"
+                                  VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <GroupBox Header="Input Image">
+                                <StackPanel>
+                                    <TextBlock Text="Choose any image format supported by Windows imaging." />
+                                    <TextBox x:Name="ImageInputPathTextBox"
+                                             IsReadOnly="True" />
+                                    <Button Content="Browse Image..."
+                                            Click="BrowseImageInput_Click" />
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Header="Background Removal">
+                                <StackPanel>
+                                    <TextBlock TextWrapping="Wrap"
+                                               Text="Detects edge-connected background pixels using the sampled or manual color, then writes them as white sky in the MTN export." />
+                                    <CheckBox x:Name="RemoveBackgroundCheckBox"
+                                              Margin="0,10,0,0"
+                                              Content="Remove background before converting"
+                                              Checked="BackgroundSettingsChanged"
+                                              Unchecked="BackgroundSettingsChanged" />
+                                    <CheckBox x:Name="UseCustomBackgroundColorCheckBox"
+                                              Margin="0,10,0,0"
+                                              Content="Use a manual detection color instead of the top-left pixel"
+                                              Checked="BackgroundSettingsChanged"
+                                              Unchecked="BackgroundSettingsChanged" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Pick Color..."
+                                                Click="PickBackgroundColor_Click" />
+                                        <Border x:Name="BackgroundColorSwatch"
+                                                Width="42"
+                                                Height="42"
+                                                Margin="0,8,8,0"
+                                                CornerRadius="6"
+                                                BorderBrush="#FF9F8E74"
+                                                BorderThickness="1"
+                                                Background="Black" />
+                                    </StackPanel>
+                                    <TextBlock x:Name="BackgroundColorValueTextBlock"
+                                               Margin="0,2,0,0"
+                                               Text="#000000" />
+                                    <TextBlock Margin="0,10,0,0"
+                                               Text="Color tolerance" />
+                                    <Slider x:Name="BackgroundToleranceSlider"
+                                            Minimum="0"
+                                            Maximum="120"
+                                            TickFrequency="5"
+                                            IsSnapToTickEnabled="False"
+                                            Value="24"
+                                            ValueChanged="BackgroundSettingsChanged" />
+                                    <TextBlock x:Name="BackgroundToleranceValueTextBlock"
+                                               Margin="0,4,0,0"
+                                               Text="24" />
+                                    <Button Content="Reset Preview"
+                                            Click="ResetBackgroundPreview_Click" />
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Header="Output MTN">
+                                <StackPanel>
+                                    <TextBlock Text="Select where the converted mountain file will be written." />
+                                    <TextBox x:Name="MountainOutputPathTextBox"
+                                             IsReadOnly="True" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Choose Output..."
+                                                Click="ChooseMountainOutput_Click" />
+                                        <Button Content="Convert to MTN"
+                                                Background="#FFC55A11"
+                                                Foreground="White"
+                                                Click="ConvertToMountain_Click" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Header="Details">
+                                <StackPanel>
+                                    <TextBlock x:Name="ImageModeInfoTextBlock"
+                                               TextWrapping="Wrap"
+                                               Text="Load an image to generate a 16-color preview and an MTN file." />
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <Grid Grid.Column="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Grid.Column="0" Header="Prepared Image Preview">
+                            <Border Background="{StaticResource CheckerboardBrush}"
+                                    CornerRadius="8">
+                                <Image x:Name="SourceImagePreview"
+                                       Stretch="Uniform" />
+                            </Border>
+                        </GroupBox>
+
+                        <GroupBox Grid.Column="2" Header="Generated Bitmap Preview">
+                            <Border Background="#FFE2D6C3"
+                                    CornerRadius="8">
+                                <Image x:Name="ImageModeOutputPreview"
+                                       Stretch="Uniform" />
+                            </Border>
+                        </GroupBox>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Mountain to Image">
+                <Grid Margin="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="340" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <ScrollViewer Grid.Column="0"
+                                  VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <GroupBox Header="Input MTN">
+                                <StackPanel>
+                                    <TextBlock Text="Choose a Scorched Earth mountain file." />
+                                    <TextBox x:Name="MountainInputPathTextBox"
+                                             IsReadOnly="True" />
+                                    <Button Content="Browse MTN..."
+                                            Click="BrowseMountainInput_Click" />
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Header="Output Bitmap">
+                                <StackPanel>
+                                    <TextBlock Text="Select where the decoded bitmap should be written." />
+                                    <TextBox x:Name="BitmapOutputPathTextBox"
+                                             IsReadOnly="True" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Choose Output..."
+                                                Click="ChooseBitmapOutput_Click" />
+                                        <Button Content="Convert to BMP"
+                                                Background="#FF1D6F5F"
+                                                Foreground="White"
+                                                Click="ConvertToBitmap_Click" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Header="Details">
+                                <StackPanel>
+                                    <TextBlock x:Name="MountainModeInfoTextBlock"
+                                               TextWrapping="Wrap"
+                                               Text="Load an MTN file to preview the decoded 16-color bitmap before saving it." />
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <Grid Grid.Column="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Grid.Column="0" Header="Decoded Preview">
+                            <Border Background="#FFE2D6C3"
+                                    CornerRadius="8">
+                                <Image x:Name="MountainModeInputPreview"
+                                       Stretch="Uniform" />
+                            </Border>
+                        </GroupBox>
+
+                        <GroupBox Grid.Column="2" Header="Saved Bitmap Preview">
+                            <Border Background="#FFE2D6C3"
+                                    CornerRadius="8">
+                                <Image x:Name="MountainModeOutputPreview"
+                                       Stretch="Uniform" />
+                            </Border>
+                        </GroupBox>
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <Border Grid.Row="2"
+                Margin="0,16,0,0"
+                Padding="12"
+                CornerRadius="10"
+                Background="#FFEEE3D3">
+            <TextBlock x:Name="StatusTextBlock"
+                       FontSize="14"
+                       Text="Ready." />
+        </Border>
+    </Grid>
+</Window>
